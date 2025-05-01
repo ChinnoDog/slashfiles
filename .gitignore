@@ -1,0 +1,31 @@
+# Ignore everything
+/*
+
+# But not these files...
+!.gitignore
+!.gitconfig
+
+# Unignore some filesystem directories
+!root/
+root/*
+!root/.bashrc.d/
+!root/.bashrc.d/**
+root/.bashrc.d/.bashrc
+!root/.gitconfig
+!etc/
+etc/*
+!etc/sudoers.d/
+!etc/sudoers.d/**
+
+# ...even if they are in subdirectories
+#!*/
+
+# if the files to be tracked are in subdirectories
+#!*/a/b/file1.txt
+#!*/a/b/c/*
+
+# But especially ignore these files
+.bashrc.d/99-private.sh
+.bashrc.d/.bashrc
+etc/sudoers.d/README
+
