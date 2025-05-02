@@ -4,6 +4,9 @@
 # But not these files...
 !.gitignore
 !.gitconfig
+!makefile
+!makefile.d/
+!makefile.d/**
 
 # Unignore some filesystem directories
 !root/
@@ -16,6 +19,8 @@ root/.bashrc.d/.bashrc
 etc/*
 !etc/sudoers.d/
 !etc/sudoers.d/**
+!etc/slashfiles
+!etc/slashfiles/**
 
 # ...even if they are in subdirectories
 #!*/

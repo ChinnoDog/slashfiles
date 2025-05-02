@@ -1,0 +1,30 @@
+#!/bin/bash
+set -euo pipefail
+
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+# Build ancestry list from 'linux/debian/ubuntu' => [master, linux, linux/debian]
+lineage=()
+path="$current_branch"
+while [[ "$path" == *"/"* ]]; do
+  path="${path%/*}"
+  lineage=("$path" "${lineage[@]}")
+done
+lineage=("master" "${lineage[@]}")
+
+# Only keep existing branches (locally or remotely)
+existing=()
+for branch in "${lineage[@]}"; do
+  if git show-ref --verify --quiet "refs/heads/$branch" || git show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+    existing+=("$branch")
+  else
+    echo "Skipping missing branch: $branch"
+  fi
+done
+
+echo "Merging into $current_branch from:"
+for branch in "${existing[@]}"; do
+  echo "  - $branch"
+  git merge --no-edit "$branch"
+done
+
