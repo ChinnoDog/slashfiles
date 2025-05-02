@@ -1,0 +1,5 @@
+Enabled: no
+Types: deb
+URIs: cdrom:[Ubuntu 21.04 _Hirsute Hippo_ - Release amd64 (20210420)]/
+Suites: hirsute
+Components: main restricted

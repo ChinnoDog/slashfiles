@@ -21,6 +21,17 @@ etc/*
 !etc/sudoers.d/**
 !etc/slashfiles
 !etc/slashfiles/**
+!etc/apt
+etc/apt/*
+!etc/apt/sources.list.d/
+etc/apt/sources.list.d/*
+!etc/apt/sources.list.d/*.list
+!etc/apt/sources.list.d/*.sources
+!etc/apt/trusted.gpg.d
+etc/apt/trusted.gpg.d/*
+!etc/apt/trusted.gpg.d/*.gpg
+!etc/apt/trusted.gpg.d/*.asc
+
 
 # ...even if they are in subdirectories
 #!*/

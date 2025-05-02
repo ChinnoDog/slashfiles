@@ -1,0 +1,5 @@
+Enabled: no
+Types: deb
+URIs: https://baltocdn.com/helm/stable/debian/
+Suites: all
+Components: main

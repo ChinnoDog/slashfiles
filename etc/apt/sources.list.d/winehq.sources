@@ -1,0 +1,5 @@
+Enabled: no
+Types: deb
+URIs: https://dl.winehq.org/wine-builds/ubuntu/
+Suites: hirsute
+Components: main
