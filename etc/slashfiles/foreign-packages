@@ -1,0 +1,3 @@
+# Format: <name> <url> [expected_sha256]
+minikube https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+

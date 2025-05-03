@@ -31,6 +31,12 @@ etc/apt/sources.list.d/*
 etc/apt/trusted.gpg.d/*
 !etc/apt/trusted.gpg.d/*.gpg
 !etc/apt/trusted.gpg.d/*.asc
+!usr/
+usr/*
+!usr/local/
+usr/local/*
+!usr/local/bin/
+!usr/local/bin/*
 
 
 # ...even if they are in subdirectories

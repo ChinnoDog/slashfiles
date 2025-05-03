@@ -1,0 +1,5 @@
+#!/bin/bash
+if [[ "$1" == "update" ]]; then
+  /usr/local/bin/update-local-repo || exit 1
+fi
+exec /usr/bin/apt "$@"

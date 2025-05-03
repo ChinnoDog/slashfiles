@@ -1,0 +1,50 @@
+#!/bin/bash
+set -euo pipefail
+
+REPO_DIR="/var/cache/slashfiles/repo"
+DEB_DIR="$REPO_DIR/pool"
+DIST_DIR="$REPO_DIR/dists/stable/main/binary-amd64"
+URL_LIST="/etc/slashfiles/foreign-packages"
+
+mkdir -p "$DEB_DIR" "$DIST_DIR"
+
+while read -r name url rest; do
+  [ -z "$name" ] && continue
+  [ "${name:0:1}" = "#" ] && continue
+
+  filename=$(basename "$url")
+  deb_path="$DEB_DIR/$filename"
+
+  # Download only if newer
+  if ! curl -sfL -z "$deb_path" -o "$deb_path" "$url"; then
+    echo "Warning: failed to download $name from $url"
+    continue
+  fi
+
+  echo "Fetched $filename"
+done < "$URL_LIST"
+
+# Generate repo metadata
+cd "$REPO_DIR"
+dpkg-scanpackages pool /dev/null | gzip -9 > "$DIST_DIR/Packages.gz"
+
+ARCHS=$(find "$REPO_DIR/dists/stable" -mindepth 2 -type d -printf '%f\n' | grep -E '^binary-' | sed 's/^binary-//')
+COMPONENTS=$(find "$REPO_DIR/dists/stable" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | grep -v Release)
+
+PACKAGES_GZ_PATH="dists/stable/main/binary-amd64/Packages.gz"
+
+# Compute all hash types
+SIZE_GZ=$(stat -c%s "$REPO_DIR/$PACKAGES_GZ_PATH")
+SHA256_GZ=$(sha256sum "$REPO_DIR/$PACKAGES_GZ_PATH" | awk '{print $1}')
+
+cat > "$REPO_DIR/dists/stable/Release" <<EOF
+Origin: slashfiles
+Label: slashfiles
+Suite: stable
+Codename: stable
+Architectures: ${ARCHS:-amd64}
+Components: ${COMPONENTS:-main}
+Date: $(date -Ru)
+SHA256:
+ $SHA256_GZ $SIZE_GZ $PACKAGES_GZ_PATH
+EOF
