@@ -8,16 +8,14 @@ URL_LIST="/etc/slashfiles/foreign-packages"
 
 mkdir -p "$DEB_DIR" "$DIST_DIR"
 
-while read -r name url rest; do
-  [ -z "$name" ] && continue
-  [ "${name:0:1}" = "#" ] && continue
-
+while read -r url; do
+  [ -z "$url" ] && continue
   filename=$(basename "$url")
   deb_path="$DEB_DIR/$filename"
 
   # Download only if newer
   if ! curl -sfL -z "$deb_path" -o "$deb_path" "$url"; then
-    echo "Warning: failed to download $name from $url"
+    echo "Warning: failed to download $url"
     continue
   fi
 
