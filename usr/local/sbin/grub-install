@@ -1,0 +1,41 @@
+#!/bin/bash
+# Create monolithic grub instead of the default one created by grub-install
+
+set -e
+# set -x
+
+image=/boot/efi/EFI/debian/grubx64.efi
+
+early=(
+  part_gpt part_msdos
+  crypto cryptodisk luks
+  gcry_sha256 gcry_rijndael gcry_whirlpool gcry_twofish gcry_serpent gcry_camellia gcry_cast5 gcry_blowfish
+  btrfs ext2 fat
+  lvm loopback
+  search search_fs_uuid search_label
+  terminal configfile gettext echo test normal
+)
+
+moddir="/usr/lib/grub/x86_64-efi"
+all_mods=($(find "$moddir" -name '*.mod' -exec basename {} .mod \; | sort -u))
+
+ordered=("${early[@]}")
+
+# Append remaining modules not already in the early list
+for mod in "${all_mods[@]}"; do
+  if [[ ! " ${early[*]} " =~ " ${mod} " ]]; then
+    ordered+=("$mod")
+  fi
+done
+
+modules=$(IFS=' ' ; echo "${ordered[*]}")
+
+echo "Creating monolithic EFI image at $image"
+grub-mkstandalone \
+  --format=x86_64-efi \
+  --output=$image \
+  --locales="" \
+  --fonts="" \
+  --compress=xz \
+  --modules="$modules" \
+  "boot/grub/grub.cfg=/etc/slashfiles/local/grub.cfg"

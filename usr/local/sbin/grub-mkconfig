@@ -1,0 +1,49 @@
+#!/bin/bash
+# Wrapper because grub doesn't support btrfs striped across LUKS
+
+set -e
+
+/usr/sbin/grub-mkconfig "$@"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -o)
+      OUTFILE="$2"
+      shift 2
+      ;;
+    *) shift ;;
+  esac
+done
+
+# Discover UUIDs of LUKS volumes
+UUIDS="$(for i in 0 1; do blkid -s UUID -o value /dev/nvme${i}n1p2 | tr -d "-"; done)"
+UUID1=$(grub-probe --target=cryptodisk_uuid /boot)
+UUID2=$(echo "$UUIDS" | grep -v "$UUID1")
+
+# Edit main grub.cfg
+echo "grub-mkconfig wrapper applying multicrypt patch"
+perl -i -pe "s/(^\s*cryptomount -u )$UUID1/\1cryptomount -u $UUID1\n\1cryptomount -u $UUID2/g" "$OUTFILE"
+
+# # Write monolithic grub to EFI partition as default image
+# echo "Creating monolithic EFI image at $IMAGE"
+# IMAGE=/boot/efi/EFI/debian/grubx64.efi
+# mkdir -p $(dirname $IMAGE)
+# #ALL_MODULES=$(basename -s .mod /usr/lib/grub/x86_64-efi/*.mod | tr '\n' ' ')
+# MODULES=$(grep -oP '^insmod \K\S+' /boot/grub/grub.cfg | awk '!seen[$0]++' | xargs)
+# TMP_CFG=$(mktemp)
+# cat > "$TMP_CFG" <<EOF
+# cryptomount -u $UUID1
+# cryptomount -u $UUID2
+# set root=(crypto0)
+# set prefix=(\$root)/@/grub
+# configfile \$prefix/grub.cfg
+# EOF
+# 
+# grub-mkstandalone \
+#   --format=x86_64-efi \
+#   --output=$IMAGE \
+#   --locales="" \
+#   --fonts="" \
+#   --compress=xz \
+#   --modules="$MODULES" \
+#   "boot/grub/grub.cfg=$TMP_CFG"
