@@ -21,6 +21,7 @@ etc/*
 !etc/sudoers.d/**
 !etc/slashfiles
 !etc/slashfiles/**
+etc/slashfiles/local
 !etc/apt
 etc/apt/*
 !etc/apt/sources.list.d/
