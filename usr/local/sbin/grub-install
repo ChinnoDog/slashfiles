@@ -5,30 +5,7 @@ set -e
 # set -x
 
 image=/boot/efi/EFI/debian/grubx64.efi
-
-early=(
-  part_gpt part_msdos
-  crypto cryptodisk luks
-  gcry_sha256 gcry_rijndael gcry_whirlpool gcry_twofish gcry_serpent gcry_camellia gcry_cast5 gcry_blowfish
-  btrfs ext2 fat
-  lvm loopback
-  search search_fs_uuid search_label
-  terminal configfile gettext echo test normal
-)
-
-moddir="/usr/lib/grub/x86_64-efi"
-all_mods=($(find "$moddir" -name '*.mod' -exec basename {} .mod \; | sort -u))
-
-ordered=("${early[@]}")
-
-# Append remaining modules not already in the early list
-for mod in "${all_mods[@]}"; do
-  if [[ ! " ${early[*]} " =~ " ${mod} " ]]; then
-    ordered+=("$mod")
-  fi
-done
-
-modules=$(IFS=' ' ; echo "${ordered[*]}")
+all_modules=$(basename -s .mod /usr/lib/grub/x86_64-efi/*.mod | tr '\n' ' ')
 
 echo "Creating monolithic EFI image at $image"
 grub-mkstandalone \
@@ -37,5 +14,8 @@ grub-mkstandalone \
   --locales="" \
   --fonts="" \
   --compress=xz \
-  --modules="$modules" \
-  "boot/grub/grub.cfg=/etc/slashfiles/local/grub.cfg"
+  --modules="$all_modules" \
+  "boot/grub/grub.cfg=/boot/efi/EFI/debian/grub.cfg" \
+  "crypto-keyfile.img=/crypto-keyfile.img"
+
+
