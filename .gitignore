@@ -39,6 +39,10 @@ usr/*
 usr/local/*
 !usr/local/bin/
 !usr/local/bin/*
+!usr/share/
+usr/share/*
+!usr/share/keyrings/
+usr/share/keyrings/debian-*
 
 
 # ...even if they are in subdirectories
