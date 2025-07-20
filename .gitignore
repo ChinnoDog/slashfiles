@@ -33,6 +33,9 @@ etc/apt/trusted.gpg.d/*
 !etc/apt/trusted.gpg.d/*.gpg
 !etc/apt/trusted.gpg.d/*.asc
 etc/apt/trusted.gpg.d/debian-archive-*
+!etc/udev
+etc/udev/*
+!etc/udev/rules.d
 !usr/
 usr/*
 !usr/local/
