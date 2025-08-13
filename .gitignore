@@ -24,6 +24,7 @@ etc/*
 etc/slashfiles/local
 !etc/apt
 etc/apt/*
+!etc/apt/keyrings
 !etc/apt/sources.list.d/
 etc/apt/sources.list.d/*
 !etc/apt/sources.list.d/*.list
